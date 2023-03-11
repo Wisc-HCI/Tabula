@@ -27,5 +27,3 @@ sudo docker run synthesizer_image bash run.sh  # run
 ```
 
 Also included is the Android apk file to run the frontend on an Android device.
-
-(apk will be added shortly)
