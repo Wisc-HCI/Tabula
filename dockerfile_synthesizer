@@ -1,0 +1,52 @@
+FROM osrf/ros:noetic-desktop-full
+
+SHELL [ "/bin/bash" , "-c" ]
+
+# install system dependencies
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jdk && \
+    apt-get install -y ant && \
+    apt-get install -y unzip && \
+    apt-get install -y python3 && \
+    apt-get install -y python3-pip && \
+    apt-get clean;
+RUN apt-get install wget
+RUN apt-get update && apt-get install -y git
+
+# install python dependencies
+RUN python3 -m pip install nltk spacy contractions
+RUN python3 -m spacy download en_core_web_sm
+RUN <<eot
+#!/usr/bin/env python3
+import nltk
+nltk.download('wordnet')
+nltk.download('verbnet3')
+nltk.download('omw-1.4')
+nltk.download('punkt')   
+eot
+
+# install ros packages
+RUN source /opt/ros/noetic/setup.bash \
+  && mkdir -p /catkin_ws/src \
+  && cd /catkin_ws/src \
+  && git clone https://github.com/Wisc-HCI/TabulaSynthesizer.git \
+  && git clone https://github.com/Unity-Technologies/ROS-TCP-Endpoint.git 
+
+# make the ros workspace
+RUN source /opt/ros/noetic/setup.bash \ 
+  && cd /catkin_ws \
+  && catkin_make
+
+# install the stanford parser
+RUN cd /catkin_ws/src/TabulaSynthesizer \
+  && mkdir bin && cd bin \
+  && wget https://nlp.stanford.edu/software/stanford-corenlp-latest.zip \
+  && unzip stanford-corenlp-latest.zip
+
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+RUN echo "source /catkin_ws/devel/setup.bash" >> ~/.bashrc
+
+WORKDIR /catkin_ws/src/TabulaSynthesizer
+CMD bash run.sh
