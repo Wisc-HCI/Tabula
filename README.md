@@ -19,9 +19,13 @@ You can find instructions for running Tabula within each of these repositories.
 
 ## Pre-built Version of Tabula
 
-Included within this repository is a dockerfile that you may build and run.
+Included within this repository is a dockerfile for the synthesizer that you may build and run.
 
 ```
 sudo docker build -f dockerfile_synthesizer -t synthesizer_image .  # build
 sudo docker run synthesizer_image bash run.sh  # run
 ```
+
+Also included is the Android apk file to run the frontend on an Android device.
+
+(apk will be added shortly)
